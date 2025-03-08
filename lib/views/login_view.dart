@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import '../firebase_options.dart';
+import 'dart:developer' as devtools show log;
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -33,13 +32,11 @@ class _LoginViewState extends State<LoginView> {
     var style = TextStyle(color: Theme.of(context).colorScheme.onPrimary);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Login'),),
+      appBar: AppBar(title: const Text('Login')),
       body: Column(
         children: [
           TextFormField(
             controller: _email,
-            enableSuggestions: false,
-            autocorrect: false,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(hintText: 'Enter your email here'),
           ),
@@ -54,26 +51,30 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
-      
+
               try {
-                final userCredentials = await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(email: email, password: password);
-                print(userCredentials);
+                await FirebaseAuth.instance
+                    .signInWithEmailAndPassword(
+                      email: email,
+                      password: password,
+                    );
+
+                Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil('/notes/', (route) => false);
               } on FirebaseAuthException catch (e) {
-                if (e.code == 'invalid-credential') {
-                  print('Invalid credentials');
-                }
+                devtools.log(e.code);
               }
             },
             child: const Text('Login'),
           ),
           TextButton(
-            onPressed: () => {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                '/register/', 
-                (route) => false, 
-              )
-            },
+            onPressed:
+                () => {
+                  Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil('/register/', (route) => false),
+                },
             child: const Text('Not registered yet? Register here!'),
           ),
         ],

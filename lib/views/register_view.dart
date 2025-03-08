@@ -31,7 +31,7 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    var style = TextStyle(color: Theme.of(context).colorScheme.onPrimary);
+    //var style = TextStyle(color: Theme.of(context).colorScheme.onPrimary);
 
     return Scaffold(
       appBar: AppBar(

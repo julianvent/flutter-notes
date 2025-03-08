@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:flutterino/constants/routes.dart';
+import 'package:flutterino/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -31,7 +32,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    var style = TextStyle(color: Theme.of(context).colorScheme.onPrimary);
+    // var style = TextStyle(color: Theme.of(context).colorScheme.onPrimary);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
@@ -55,17 +56,27 @@ class _LoginViewState extends State<LoginView> {
               final password = _password.text;
 
               try {
-                await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(
-                      email: email,
-                      password: password,
-                    );
+                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                  email: email,
+                  password: password,
+                );
+
+                // Verifica que el widget sigue en pantalla
+                if (!context.mounted) return;
 
                 Navigator.of(
                   context,
                 ).pushNamedAndRemoveUntil(notesRoute, (route) => false);
               } on FirebaseAuthException catch (e) {
-                devtools.log(e.code);
+                if (!context.mounted) return;
+
+                if (e.code == 'invalid-credential') {
+                  await showErrorDialog(context, 'Wrong credentials');
+                } else {
+                  await showErrorDialog(context, e.code);
+                }
+              } catch (e) {
+                await showErrorDialog(context, e.toString());
               }
             },
             child: const Text('Login'),

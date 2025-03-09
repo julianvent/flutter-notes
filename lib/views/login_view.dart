@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:developer' as devtools show log;
 
 import 'package:flutterino/constants/routes.dart';
+import 'package:flutterino/services/auth/auth_exceptions.dart';
+import 'package:flutterino/services/auth/auth_service.dart';
 import 'package:flutterino/utilities/show_error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -56,36 +56,27 @@ class _LoginViewState extends State<LoginView> {
               final password = _password.text;
 
               try {
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                await AuthService.firebase().logIn(
                   email: email,
                   password: password,
                 );
-                
+
                 // Verifica que el widget sigue en pantalla
                 if (!context.mounted) return;
 
-                final user = FirebaseAuth.instance.currentUser;
+                final user = AuthService.firebase().currentUser;
 
-                if (user?.emailVerified ?? false) {
+                if (user?.isEmailVerified ?? false) {
                   Navigator.of(
                     context,
                   ).pushNamedAndRemoveUntil(notesRoute, (route) => false);
                 } else {
-                  Navigator.of(
-                    context,
-                  ).pushNamed(verifyEmailRoute);
+                  Navigator.of(context).pushNamed(verifyEmailRoute);
                 }
-
-              } on FirebaseAuthException catch (e) {
-                if (!context.mounted) return;
-
-                if (e.code == 'invalid-credential') {
-                  await showErrorDialog(context, 'Wrong credentials');
-                } else {
-                  await showErrorDialog(context, e.code);
-                }
-              } catch (e) {
-                await showErrorDialog(context, e.toString());
+              } on InvalidCredentialException {
+                await showErrorDialog(context, 'Wrong credentials');
+              } on GenericAuthException {
+                await showErrorDialog(context, 'Authentication error');
               }
             },
             child: const Text('Login'),

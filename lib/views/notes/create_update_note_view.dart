@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutterino/services/auth/auth_service.dart';
 import 'package:flutterino/services/crud/notes_service.dart';
@@ -31,7 +29,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
       return existingNote;
     }
     final currentUser = AuthService.firebase().currentUser!;
-    final email = currentUser.email!;
+    final email = currentUser.email;
     final owner = await _notesService.getUser(email: email);
     final newNote = await _notesService.createNote(owner: owner);
     _note = newNote;
@@ -50,7 +48,6 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
     final text = _textController.text;
 
     if (note != null && text.isNotEmpty) {
-      log(_note!.id.toString());
       await _notesService.updateNote(note: note, text: text);
     }
   }

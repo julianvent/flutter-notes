@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutterino/constants/routes.dart';
 import 'package:flutterino/services/auth/auth_exceptions.dart';
-import 'package:flutterino/services/auth/auth_service.dart';
+import 'package:flutterino/services/auth/bloc/auth_bloc.dart';
+import 'package:flutterino/services/auth/bloc/auth_event.dart';
 import 'package:flutterino/utilities/dialogs/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
@@ -56,23 +58,7 @@ class _LoginViewState extends State<LoginView> {
               final password = _password.text;
 
               try {
-                await AuthService.firebase().logIn(
-                  email: email,
-                  password: password,
-                );
-
-                // Verifica que el widget sigue en pantalla
-                if (!context.mounted) return;
-
-                final user = AuthService.firebase().currentUser;
-
-                if (user?.isEmailVerified ?? false) {
-                  Navigator.of(
-                    context,
-                  ).pushNamedAndRemoveUntil(notesRoute, (route) => false);
-                } else {
-                  Navigator.of(context).pushNamed(verifyEmailRoute);
-                }
+                context.read<AuthBloc>().add(AuthEventLogIn(email, password));
               } on InvalidCredentialException {
                 await showErrorDialog(context, 'Wrong credentials');
               } on GenericAuthException {

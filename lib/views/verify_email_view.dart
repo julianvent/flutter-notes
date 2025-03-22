@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutterino/constants/routes.dart';
-import 'package:flutterino/services/auth/auth_service.dart';
 import 'package:flutterino/services/auth/bloc/auth_bloc.dart';
 import 'package:flutterino/services/auth/bloc/auth_event.dart';
-import 'package:flutterino/services/auth/bloc/auth_state.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});

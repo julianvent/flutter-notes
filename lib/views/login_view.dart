@@ -5,7 +5,6 @@ import 'package:flutterino/services/auth/bloc/auth_bloc.dart';
 import 'package:flutterino/services/auth/bloc/auth_event.dart';
 import 'package:flutterino/services/auth/bloc/auth_state.dart';
 import 'package:flutterino/utilities/dialogs/error_dialog.dart';
-import 'package:flutterino/utilities/dialogs/loading_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
